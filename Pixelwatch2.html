@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 
-<title>Pixel-Wächter Pro</title>
+<title>Pixel-Wächter Pro V2</title>
 
 <style>
     body {
@@ -658,13 +658,22 @@ function updateSmartUI() {
         document.getElementById('rowLocalSound').style.display = 'flex';
     } else {
         document.getElementById('rowLocalSound').style.display = 'none';
-        selLocalSound.value = 'on'; 
     }
 
     if (chkAudioGuard.checked) {
+        if (!selLocalSound.disabled) {
+            // Speichere die vorherige Auswahl unsichtbar im Hintergrund
+            selLocalSound.dataset.prevState = selLocalSound.value; 
+        }
         selLocalSound.value = 'off';
         selLocalSound.disabled = true;
     } else {
+        if (selLocalSound.disabled) {
+            // Stelle die gespeicherte Auswahl wieder her
+            if (selLocalSound.dataset.prevState) {
+                selLocalSound.value = selLocalSound.dataset.prevState;
+            }
+        }
         selLocalSound.disabled = false;
     }
     updateAppVisuals();
@@ -930,6 +939,9 @@ function updateLabels() {
 }
 
 function saveSettings() {
+    // Welcher Ton-Status soll wirklich für den nächsten Start gespeichert werden?
+    let realLocalSound = (chkAudioGuard.checked && selLocalSound.dataset.prevState) ? selLocalSound.dataset.prevState : selLocalSound.value;
+
     const settings = {
         expert: chkExpert.checked,
         sens: slideSens.value, mass: slideMass.value, width: slideWidth.value, height: slideHeight.value, takt: slideTakt.value, toleranz: slideToleranz.value,
@@ -941,7 +953,9 @@ function saveSettings() {
         cameraId: cameraSelect.value, positions: boxes.map(b => ({ x: b.x, y: b.y })),
         anchor: { x: anchorBox.x, y: anchorBox.y, active: anchorBox.active },
         mute: { x: muteBox.x, y: muteBox.y, active: muteBox.active },
-        telegram: chkTelegram.checked, audioGuard: chkAudioGuard.checked, localSound: selLocalSound.value, tgToken: txtTelegramToken.value.trim(), tgChat: txtTelegramChatId.value.trim(), 
+        telegram: chkTelegram.checked, audioGuard: chkAudioGuard.checked, 
+        localSound: realLocalSound, 
+        tgToken: txtTelegramToken.value.trim(), tgChat: txtTelegramChatId.value.trim(), 
         tgVideoMode: selTgVideoMode.value, audioThreshold: slideAudioThreshold.value, weather: txtWeatherCities.value.trim()
     };
     localStorage.setItem('pixel_settings_v2', JSON.stringify(settings));
@@ -984,8 +998,13 @@ function loadSettings() {
             if (s.mute) { muteBox.x = s.mute.x; muteBox.y = s.mute.y; muteBox.active = s.mute.active; chkMuteActive.checked = s.mute.active; }
             
             if (s.telegram !== undefined) { chkTelegram.checked = s.telegram; telegramSettingsBox.style.display = s.telegram ? 'flex' : 'none'; }
+            
+            if (s.localSound) {
+                selLocalSound.value = s.localSound;
+                selLocalSound.dataset.prevState = s.localSound;
+            }
             if (s.audioGuard !== undefined) chkAudioGuard.checked = s.audioGuard;
-            if (s.localSound) selLocalSound.value = s.localSound;
+            
             if (s.tgToken) txtTelegramToken.value = s.tgToken; if (s.tgChat) txtTelegramChatId.value = s.tgChat; 
             if (s.tgVideoMode) selTgVideoMode.value = s.tgVideoMode;
             if (s.audioThreshold) slideAudioThreshold.value = s.audioThreshold;
@@ -1030,9 +1049,11 @@ exitStealthBtn.addEventListener('click', () => { stealthOverlay.style.display = 
 toggleAudioGuardBtnStealth.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!chkTelegram.checked || !txtTelegramToken.value.trim() || !txtTelegramChatId.value.trim()) return; 
+    
     chkAudioGuard.checked = !chkAudioGuard.checked;
     updateSmartUI();
     saveSettings();
+    
     if (chkAudioGuard.checked && isRunning) restartAudioSystem();
     else if (!chkAudioGuard.checked && micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
 });
