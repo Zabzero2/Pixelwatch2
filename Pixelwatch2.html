@@ -1245,7 +1245,26 @@ function playLoudAlarm() {
     gain.gain.value = 0.25; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.8); 
 }
 
-// --- WETTER API ---
+// --- WETTER & MOND API ---
+function getMoonEmoji(lat) {
+    // Exakter Neumond-Anker: 6. Jan 2000 12:24 UTC = 947161440000 ms
+    const epoch = 947161440000;
+    // Ein Mondzyklus in Millisekunden: 29.53058868 Tage
+    const cycleMs = 29.53058868 * 24 * 60 * 60 * 1000;
+    
+    let now = Date.now();
+    let phase = ((now - epoch) % cycleMs) / cycleMs; 
+    
+    // Unterteilung in 8 Phasen (Index 0 bis 7)
+    let index = Math.floor((phase * 8) + 0.5) % 8;
+
+    // Symbol-Sets (Je nach Hemisphäre spiegelverkehrt)
+    const northern = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+    const southern = ['🌑', '🌘', '🌗', '🌖', '🌕', '🌔', '🌓', '🌒'];
+
+    return (lat >= 0) ? northern[index] : southern[index];
+}
+
 async function fetchWeather() {
     if(!txtWeatherCities.value) { weatherDisplay.innerHTML = ''; return; }
     
@@ -1264,7 +1283,7 @@ async function fetchWeather() {
                 searchQuery = parts[1].trim();
             }
 
-            // Prüfen ob searchQuery GPS Koordinaten sind (z.B. "48.57,10.43" oder "48.57, 10.43")
+            // Prüfen ob searchQuery GPS Koordinaten sind
             let isGps = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(searchQuery);
             let lat, lon;
 
@@ -1287,7 +1306,11 @@ async function fetchWeather() {
             let isDay = wData.current_weather.is_day === 1;
             
             let emoji = '☁️'; let desc = '';
-            if(code === 0 || code === 1) { emoji = isDay ? '☀️' : '🌙'; desc = 'Klar'; }
+            
+            if(code === 0 || code === 1) { 
+                emoji = isDay ? '☀️' : getMoonEmoji(lat); 
+                desc = 'Klar'; 
+            }
             else if(code === 2 || code === 3) { emoji = isDay ? '⛅' : '☁️'; desc = 'Bewölkt'; }
             else if(code === 45 || code === 48) { emoji = '🌫️'; desc = 'Nebel'; }
             else if(code >= 51 && code <= 67) { emoji = '🌧️'; desc = 'Regen'; }
