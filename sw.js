@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pixel-waechter-v2-cache';
+const CACHE_NAME = 'pixel-waechter-v2-cache-v3';
 const urlsToCache = [
   './Pixelwatch2.html',
   './manifest.json'
