@@ -7,12 +7,12 @@
   "theme_color": "#1e1e1e",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Camera_Icon_1.svg/192px-Camera_Icon_1.svg.png",
+      "src": "./icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Camera_Icon_1.svg/512px-Camera_Icon_1.svg.png",
+      "src": "./icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
