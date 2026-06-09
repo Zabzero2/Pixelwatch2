@@ -1,6 +1,6 @@
 {
   "name": "Pixel-Wächter Pro V2",
-  "short_name": "Wächter 2",
+  "short_name": "PixelPro 2",
   "start_url": "./Pixelwatch2.html",
   "display": "fullscreen",
   "background_color": "#000000",
