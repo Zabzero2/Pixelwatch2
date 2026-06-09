@@ -91,6 +91,7 @@
 
     .module-body { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 1px solid #444; padding-top: 15px; }
 
+    .sec-display { border-left-color: #ccc; }
     .sec-main { border-left-color: #00ff88; }
     .sec-anchor { border-left-color: #17a2b8; }
     .sec-mute { border-left-color: #ffcc00; }
@@ -182,9 +183,13 @@
         </ul>
 
         <h3 style="color: white; font-size: 16px; margin-bottom: 5px;">Tarnmodus</h3>
-        <p>Verdunkelt das Display für Pausenzeiten.<br>
-        <b>Farbcodes der Uhr:</b> Weiß = Normal aktiv. Blass-Rosa = Kamera/Überwachung pausiert. Blass-Blau = Gerät ist stummgeschaltet (Nur Telegram).<br>
-        <b>Steuerung:</b> Oberer Punkt tippen = Audio-Wächter lautlos ein/ausschalten. Unterer Punkt tippen = Tarnmodus beenden.</p>
+        <p>Verdunkelt das Display für Pausenzeiten.</p>
+        <p><b>Farbcodes der Uhr:</b><br>
+        • <b style="color: white;">Weiß:</b> Normal aktiv (Lokaler Ton AN).<br>
+        • <b style="color: #ffdd77;">Gelb:</b> Silent-Wächter (Stumm, Warnungen nur über Telegram).<br>
+        • <b style="color: #88ccff;">Blau:</b> Audio-Wächter aktiv (Stumm, lauscht in den Raum).<br>
+        • <b style="color: #ffcccc;">Rosa:</b> Kamera/Überwachung pausiert.<br>
+        <br><b>Steuerung:</b> Oberer Punkt tippen = Audio-Wächter lautlos ein/ausschalten. Unterer Punkt tippen = Tarnmodus beenden.</p>
 
         <button id="closeHelpBtn" style="margin-top: 15px; width: 100%; background: #00aaff; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">Verstanden & Schließen</button>
     </div>
@@ -231,79 +236,30 @@
     <div class="stealth-hint">Tipp: Tarnmodus beenden durch Tippen auf den unteren Uhr-Punkt.</div>
 
     <div id="mainSettingsWrapper">
-        <div class="module-section">
+        
+        <div class="module-section sec-display">
             <div class="module-header">
-                <span>Anzeige & Justierung</span>
-                <div class="checkbox-group">
+                <span style="display: flex; align-items: center; gap: 10px;">Anzeige & Justierung</span>
+                <button class="config-btn" id="btnToggleDisplayConfig">⚙️</button>
+            </div>
+            <div class="module-body" id="panelDisplaySettings" style="display: none;">
+                <div class="checkbox-group" style="flex-wrap: wrap; margin-bottom: 10px;">
                     <label><input type="checkbox" id="chkExpert"> Experten</label>
                     <label><input type="checkbox" id="chkShowZoom" checked> Werte</label>
                     <label><input type="checkbox" id="chkShowCam" checked> Live-Bild</label>
                     <label><input type="checkbox" id="chkShowDpad" checked> D-Pad</label>
                 </div>
-            </div>
-            <div class="module-body" style="border:none; padding-top: 5px; margin-top: 5px; display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <select id="cameraSelect" style="background: #444; color: white; border: 1px solid #666; border-radius: 4px; padding: 5px; flex-grow: 1; max-width: 250px;">
-                    <option value="default">Standard Kamera</option>
-                </select>
-                <button id="btnResetAll" style="background: #dc3545; font-size: 12px; padding: 8px 12px; margin-left: auto;">⚠ Alles Zurücksetzen</button>
-            </div>
-            <div class="slider-row" id="rowCamZoom" style="margin-top: 10px;">
-                <label>Live-Zoom: <span id="valCamZoom">1.0</span>x</label>
-                <button class="adj-btn" id="zoomMinus">-</button>
-                <input type="range" id="slideCamZoom" min="1" max="10" step="0.1" value="1">
-                <button class="adj-btn" id="zoomPlus">+</button>
-            </div>
-        </div>
-
-        <div class="module-section sec-smart">
-            <div class="module-header">
-                <span style="display: flex; align-items: center; gap: 10px;">Smart-Modem & Warnungen</span>
-                <button class="config-btn" id="btnToggleSmartConfig">⚙️</button>
-            </div>
-            <div class="module-body" id="panelSmartSettings" style="display: none;">
-                <div class="checkbox-group" style="flex-wrap: wrap; margin-bottom: 10px;">
-                    <label><input type="checkbox" id="chkTelegram"> Telegram (Bilder/Media)</label>
-                    <label><input type="checkbox" id="chkAudioGuard"> Audio-Wächter aktiv</label>
-                </div>
-                
-                <div class="slider-row" id="rowLocalSound" style="display: none; margin-bottom: 10px;">
-                    <label style="width: 140px;">Lokale Alarm-Töne:</label>
-                    <select id="selLocalSound">
-                        <option value="on">AN (Tablet klingelt lokal)</option>
-                        <option value="off">AUS (Stumm / Nur via Telegram)</option>
+                <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <select id="cameraSelect" style="background: #444; color: white; border: 1px solid #666; border-radius: 4px; padding: 5px; flex-grow: 1; max-width: 250px;">
+                        <option value="default">Standard Kamera</option>
                     </select>
+                    <button id="btnResetAll" style="background: #dc3545; font-size: 12px; padding: 8px 12px; margin-left: auto;">⚠ Alles Zurücksetzen</button>
                 </div>
-
-                <div class="slider-row" id="rowAudioThres">
-                    <label style="width:130px;">Audio-Schwelle: <span id="valAudioThreshold">25</span></label>
-                    <button class="adj-btn" id="audioThresMinus">-</button>
-                    <input type="range" id="slideAudioThreshold" min="1" max="100" value="25">
-                    <button class="adj-btn" id="audioThresPlus">+</button>
-                </div>
-                <div style="font-size:13px; color:#aaa; margin-left: 140px; margin-top:-5px; margin-bottom: 10px;">
-                    Live-Pegel: <span id="liveAudioLevel" style="color:#00ff88; font-weight:bold; font-size: 15px;">0</span>
-                </div>
-
-                <div id="telegramSettingsBox" style="display:none; flex-direction:column; gap:10px; background:#333; padding:10px; border-radius:6px; margin-bottom:10px;">
-                    <div class="slider-row">
-                        <label style="width: 80px;">Bot Token:</label>
-                        <input type="text" id="txtTelegramToken" placeholder="123456:ABC-DEF1234...">
-                    </div>
-                    <div class="slider-row">
-                        <label style="width: 80px;">Chat ID:</label>
-                        <input type="text" id="txtTelegramChatId" placeholder="123456789">
-                    </div>
-                    <div class="slider-row" style="margin-top: 5px;">
-                        <label style="width: 80px;">Video-Typ:</label>
-                        <select id="selTgVideoMode">
-                            <option value="box" selected>Nur Alarm-Box (Daten sparen)</option>
-                            <option value="full">HD Vollbild (Max. Details)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="slider-row">
-                    <label>Wetter-Orte:</label>
-                    <input type="text" id="txtWeatherCities" placeholder="München; Lauingen=48.57,10.43">
+                <div class="slider-row" id="rowCamZoom" style="margin-top: 10px;">
+                    <label>Live-Zoom: <span id="valCamZoom">1.0</span>x</label>
+                    <button class="adj-btn" id="zoomMinus">-</button>
+                    <input type="range" id="slideCamZoom" min="1" max="10" step="0.1" value="1">
+                    <button class="adj-btn" id="zoomPlus">+</button>
                 </div>
             </div>
         </div>
@@ -458,6 +414,60 @@
                 <button id="btnResetMute" class="reset-btn-small">Modul Reset</button>
             </div>
         </div>
+
+        <div class="module-section sec-smart">
+            <div class="module-header">
+                <span style="display: flex; align-items: center; gap: 10px;">Smart-Modem & Warnungen</span>
+                <button class="config-btn" id="btnToggleSmartConfig">⚙️</button>
+            </div>
+            <div class="module-body" id="panelSmartSettings" style="display: none;">
+                <div class="checkbox-group" style="flex-wrap: wrap; margin-bottom: 10px;">
+                    <label><input type="checkbox" id="chkTelegram"> Telegram (Bilder/Media)</label>
+                    <label><input type="checkbox" id="chkAudioGuard"> Audio-Wächter aktiv</label>
+                </div>
+                
+                <div class="slider-row" id="rowLocalSound" style="display: none; margin-bottom: 10px;">
+                    <label style="width: 140px;">Lokale Alarm-Töne:</label>
+                    <select id="selLocalSound">
+                        <option value="on">AN (Tablet klingelt lokal)</option>
+                        <option value="off">AUS (Stumm / Nur via Telegram)</option>
+                    </select>
+                </div>
+
+                <div class="slider-row" id="rowAudioThres">
+                    <label style="width:130px;">Audio-Schwelle: <span id="valAudioThreshold">25</span></label>
+                    <button class="adj-btn" id="audioThresMinus">-</button>
+                    <input type="range" id="slideAudioThreshold" min="1" max="100" value="25">
+                    <button class="adj-btn" id="audioThresPlus">+</button>
+                </div>
+                <div style="font-size:13px; color:#aaa; margin-left: 140px; margin-top:-5px; margin-bottom: 10px;">
+                    Live-Pegel: <span id="liveAudioLevel" style="color:#00ff88; font-weight:bold; font-size: 15px;">0</span>
+                </div>
+
+                <div id="telegramSettingsBox" style="display:none; flex-direction:column; gap:10px; background:#333; padding:10px; border-radius:6px; margin-bottom:10px;">
+                    <div class="slider-row">
+                        <label style="width: 80px;">Bot Token:</label>
+                        <input type="text" id="txtTelegramToken" placeholder="123456:ABC-DEF1234...">
+                    </div>
+                    <div class="slider-row">
+                        <label style="width: 80px;">Chat ID:</label>
+                        <input type="text" id="txtTelegramChatId" placeholder="123456789">
+                    </div>
+                    <div class="slider-row" style="margin-top: 5px;">
+                        <label style="width: 80px;">Video-Typ:</label>
+                        <select id="selTgVideoMode">
+                            <option value="box" selected>Nur Alarm-Box (Daten sparen)</option>
+                            <option value="full">HD Vollbild (Max. Details)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="slider-row">
+                    <label>Wetter-Orte:</label>
+                    <input type="text" id="txtWeatherCities" placeholder="München; Lauingen=48.57,10.43">
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -500,6 +510,7 @@ const chkShowZoom = document.getElementById('chkShowZoom');
 const chkShowCam = document.getElementById('chkShowCam');
 const chkShowDpad = document.getElementById('chkShowDpad');
 
+const btnToggleDisplayConfig = document.getElementById('btnToggleDisplayConfig');
 const btnToggleMainConfig = document.getElementById('btnToggleMainConfig');
 const btnToggleAnchorConfig = document.getElementById('btnToggleAnchorConfig');
 const btnToggleMuteConfig = document.getElementById('btnToggleMuteConfig');
@@ -524,6 +535,7 @@ const slideAudioThreshold = document.getElementById('slideAudioThreshold');
 const valAudioThreshold = document.getElementById('valAudioThreshold');
 const liveAudioLevel = document.getElementById('liveAudioLevel');
 
+const panelDisplaySettings = document.getElementById('panelDisplaySettings');
 const panelMainSettings = document.getElementById('panelMainSettings');
 const panelAnchorSettings = document.getElementById('panelAnchorSettings');
 const panelMuteSettings = document.getElementById('panelMuteSettings');
@@ -585,6 +597,7 @@ let showZoomValues = true;
 let showCamera = true;
 
 let settingsVisible = false; 
+let panelDisplayOpen = false;
 let panelMainOpen = false;
 let panelAnchorOpen = false;
 let panelMuteOpen = false;
@@ -662,14 +675,12 @@ function updateSmartUI() {
 
     if (chkAudioGuard.checked) {
         if (!selLocalSound.disabled) {
-            // Speichere die vorherige Auswahl unsichtbar im Hintergrund
             selLocalSound.dataset.prevState = selLocalSound.value; 
         }
         selLocalSound.value = 'off';
         selLocalSound.disabled = true;
     } else {
         if (selLocalSound.disabled) {
-            // Stelle die gespeicherte Auswahl wieder her
             if (selLocalSound.dataset.prevState) {
                 selLocalSound.value = selLocalSound.dataset.prevState;
             }
@@ -754,6 +765,7 @@ function togglePanel(btn, panel, stateVarName) {
     let isOpen = panel.style.display === 'flex';
     panel.style.display = isOpen ? 'none' : 'flex';
     isOpen ? btn.classList.remove('open') : btn.classList.add('open');
+    if(stateVarName==='display') panelDisplayOpen = !isOpen;
     if(stateVarName==='main') panelMainOpen = !isOpen;
     if(stateVarName==='anchor') panelAnchorOpen = !isOpen;
     if(stateVarName==='mute') panelMuteOpen = !isOpen;
@@ -761,6 +773,7 @@ function togglePanel(btn, panel, stateVarName) {
     saveSettings();
 }
 
+btnToggleDisplayConfig.addEventListener('click', () => togglePanel(btnToggleDisplayConfig, panelDisplaySettings, 'display'));
 btnToggleMainConfig.addEventListener('click', () => togglePanel(btnToggleMainConfig, panelMainSettings, 'main'));
 btnToggleAnchorConfig.addEventListener('click', () => togglePanel(btnToggleAnchorConfig, panelAnchorSettings, 'anchor'));
 btnToggleMuteConfig.addEventListener('click', () => togglePanel(btnToggleMuteConfig, panelMuteSettings, 'mute'));
@@ -949,7 +962,7 @@ function saveSettings() {
         anchorSens: slideAnchorSens.value, anchorW: slideAnchorW.value, anchorH: slideAnchorH.value, anchorDrift: chkAnchorDrift.checked, anchorDriftSpeed: slideAnchorDrift.value,
         muteSens: slideMuteSens.value, muteHold: slideMuteHold.value, muteW: slideMuteW.value, muteH: slideMuteH.value, muteDrift: chkMuteDrift.checked, muteDriftSpeed: slideMuteDrift.value,
         showZoomValues: showZoomValues, showCamera: showCamera, dpadVisible: chkShowDpad.checked, 
-        settingsVisible: settingsVisible, panelMainOpen: panelMainOpen, panelAnchorOpen: panelAnchorOpen, panelMuteOpen: panelMuteOpen, panelSmartOpen: panelSmartOpen,
+        settingsVisible: settingsVisible, panelDisplayOpen: panelDisplayOpen, panelMainOpen: panelMainOpen, panelAnchorOpen: panelAnchorOpen, panelMuteOpen: panelMuteOpen, panelSmartOpen: panelSmartOpen,
         cameraId: cameraSelect.value, positions: boxes.map(b => ({ x: b.x, y: b.y })),
         anchor: { x: anchorBox.x, y: anchorBox.y, active: anchorBox.active },
         mute: { x: muteBox.x, y: muteBox.y, active: muteBox.active },
@@ -988,10 +1001,11 @@ function loadSettings() {
             
             if (s.settingsVisible !== undefined) { settingsVisible = s.settingsVisible; mainSettingsWrapper.style.display = settingsVisible ? 'flex' : 'none'; toggleSettingsBtn.style.background = settingsVisible ? '#666' : '#444'; }
             
-            if (s.panelMainOpen !== undefined) { panelMainOpen = s.panelMainOpen; if(panelMainOpen) togglePanel(btnToggleMainConfig, panelMainSettings, false); }
-            if (s.panelAnchorOpen !== undefined) { panelAnchorOpen = s.panelAnchorOpen; if(panelAnchorOpen) togglePanel(btnToggleAnchorConfig, panelAnchorSettings, false); }
-            if (s.panelMuteOpen !== undefined) { panelMuteOpen = s.panelMuteOpen; if(panelMuteOpen) togglePanel(btnToggleMuteConfig, panelMuteSettings, false); }
-            if (s.panelSmartOpen !== undefined) { panelSmartOpen = s.panelSmartOpen; if(panelSmartOpen) togglePanel(btnToggleSmartConfig, panelSmartSettings, false); }
+            if (s.panelDisplayOpen !== undefined) { panelDisplayOpen = s.panelDisplayOpen; if(panelDisplayOpen) { panelDisplaySettings.style.display='flex'; btnToggleDisplayConfig.classList.add('open'); } }
+            if (s.panelMainOpen !== undefined) { panelMainOpen = s.panelMainOpen; if(panelMainOpen) { panelMainSettings.style.display='flex'; btnToggleMainConfig.classList.add('open'); } }
+            if (s.panelAnchorOpen !== undefined) { panelAnchorOpen = s.panelAnchorOpen; if(panelAnchorOpen) { panelAnchorSettings.style.display='flex'; btnToggleAnchorConfig.classList.add('open'); } }
+            if (s.panelMuteOpen !== undefined) { panelMuteOpen = s.panelMuteOpen; if(panelMuteOpen) { panelMuteSettings.style.display='flex'; btnToggleMuteConfig.classList.add('open'); } }
+            if (s.panelSmartOpen !== undefined) { panelSmartOpen = s.panelSmartOpen; if(panelSmartOpen) { panelSmartSettings.style.display='flex'; btnToggleSmartConfig.classList.add('open'); } }
 
             if (s.positions) { s.positions.forEach((pos, idx) => { if (boxes[idx]) { boxes[idx].x = pos.x; boxes[idx].y = pos.y; } }); }
             if (s.anchor) { anchorBox.x = s.anchor.x; anchorBox.y = s.anchor.y; anchorBox.active = s.anchor.active; chkAnchorActive.checked = s.anchor.active; }
@@ -1027,18 +1041,23 @@ loadSettings();
 function updateStealthClock() {
     const d = new Date();
     hoursHTML.innerText = String(d.getHours()).padStart(2, '0'); minsHTML.innerText = String(d.getMinutes()).padStart(2, '0');
-    const dots = document.querySelectorAll('#stealthOverlay div div');
+    
+    const dots = document.querySelectorAll('#toggleAudioGuardBtnStealth, #exitStealthBtn');
     
     if (isStealthActive && muteBox.active && muteBox.state === 'MUTED') {
         const visible = d.getSeconds() % 2 === 0; dots.forEach(dot => dot.style.opacity = visible ? "1" : "0");
     } else { dots.forEach(dot => dot.style.opacity = "1"); }
     
+    const tgActive = chkTelegram.checked && txtTelegramToken.value.trim() !== '' && txtTelegramChatId.value.trim() !== '';
+
     if (!isMonitoring || !isRunning) {
-        stealthOverlay.style.color = '#ffcccc'; 
-    } else if (isLocalMuted()) {
-        stealthOverlay.style.color = '#88ccff'; // Dezent bläulich im Tarnmodus, wenn stumm
+        stealthOverlay.style.color = '#ffcccc'; // Rosa: Pausiert
+    } else if (chkAudioGuard.checked) {
+        stealthOverlay.style.color = '#88ccff'; // Blau: Audio-Wächter (lauscht stumm)
+    } else if (selLocalSound.value === 'off' && tgActive) {
+        stealthOverlay.style.color = '#ffdd77'; // Gelb: Silent (Kein lokaler Ton, nur Telegram)
     } else {
-        stealthOverlay.style.color = 'white';
+        stealthOverlay.style.color = 'white'; // Weiß: Normal (Lokaler Ton an)
     }
 }
 setInterval(updateStealthClock, 500);
